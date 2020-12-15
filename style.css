@@ -80,7 +80,12 @@ body {
   border: 1px solid rgb(223, 222, 222);
 }
 
-.head {
+.body-snake {
+  background: url(/image/body-snake.png);
+  background-size: cover;
+}
+
+.head-snake {
   background: url(/image/head-snake.png);
   background-size: cover;  
 }
@@ -89,4 +94,5 @@ body {
   background: url(/image/mouse.png);
   background-size: cover; 
 }
+
 
