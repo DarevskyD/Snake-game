@@ -59,33 +59,52 @@ for(let i = 0; i < cell.length; i++) {
 }
 
 function createSnake() {
-  let posX = Math.round(Math.random() * (20-1) + 1);
-  let posY = Math.round(Math.random() * (20-1) + 1);
-  return [posX, posY]
+  let posX = Math.round(Math.random() * (18-1) + 1);
+  let posY = Math.round(Math.random() * (18-1) + 1);
+  return [posX, posY];
 }
 
 let coordinatesSnake = createSnake();
-let snakeHead = [document.querySelector(`[posX='${coordinatesSnake[0]}'][posY='${coordinatesSnake[1]}']`)];
-snakeHead[0].classList.add('head');
+let snakeHeadBody = [document.querySelector(`[posX='${coordinatesSnake[0]}'][posY='${coordinatesSnake[1]}']`),
+document.querySelector(`[posX='${coordinatesSnake[0]+1}'][posY='${coordinatesSnake[1]}']`),
+document.querySelector(`[posX='${coordinatesSnake[0]+2}'][posY='${coordinatesSnake[1]}']`)];
 
-let mouse;
-function createMouse() {
-  function addMouse() {
+for(let i = 0; i < snakeHeadBody.length; i++) {
+  snakeHeadBody[i].classList.add('body-snake');
+}
+snakeHeadBody[0].classList.add('head-snake');
+
+function createMouse() {  
     let posX = Math.round(Math.random() * (20-1) + 1);
     let posY = Math.round(Math.random() * (20-1) + 1);
-    return [posX, posY]
-  }  
-
-  let coordinatesMouse = addMouse(); 
-  mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];  
-
-  if (mouse.classList.contains('head')) {
-    let coordinatesMouse = addMouse(); 
-    mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];    
-  }
-
-  mouse.classList.add('mouse');
+    return [posX, posY];  
 }
 
-createMouse();
+let coordinatesMouse = createMouse(); 
+let mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];
+mouse[0].classList.add('mouse'); 
 
+if (coordinatesMouse == coordinatesSnake) {
+let coordinatesMouse = createMouse();
+mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];    
+}
+
+function moveSnake() {
+  let snakeMove = [snakeHeadBody[0].getAttribute('posX'), snakeHeadBody[0].getAttribute('posY')];
+  snakeHeadBody[0].classList.remove('head-snake');
+  snakeHeadBody[snakeHeadBody.length - 1].classList.remove('body-snake');
+  snakeHeadBody.pop();
+  if(snakeMove[0] < 21 && snakeMove[0] > 1) {
+    snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]-1}'][posY='${snakeMove[1]}']`));
+    snakeHeadBody[0].classList.add('head-snake');
+  } else {
+    snakeHeadBody.unshift(document.querySelector(`[posX='20'][posY='${snakeMove[1]}']`));
+    snakeHeadBody[0].classList.add('head-snake');
+  }
+  
+  for(let i = 0; i < snakeHeadBody.length; i++) {
+    snakeHeadBody[i].classList.add('body-snake');
+  }
+}
+
+let snakeInterval = setInterval(moveSnake, 400);
