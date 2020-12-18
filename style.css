@@ -91,6 +91,14 @@ body {
 }
 
 .head-snake {
-  background: url(/image/head-snake-right.png);
+  background: url(/image/head-snake.png);
   background-size: cover;  
+}
+
+.rotate-left {
+  transform: rotate(-90deg);
+}
+
+.rotate-right {
+  transform: rotate(90deg);
 }
