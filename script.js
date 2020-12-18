@@ -60,8 +60,8 @@ for(let i = 0; i < cell.length; i++) {
 }
 
 function createSnake() {
-  let posX = Math.round(Math.random() * (18-1) + 1);
-  let posY = Math.round(Math.random() * (18-1) + 1);
+  let posX = Math.round(Math.random() * (20-1) + 1);
+  let posY = Math.round(Math.random() * (20-1) + 1);
   return [posX, posY];
 }
 
@@ -75,37 +75,47 @@ for(let i = 0; i < snakeHeadBody.length; i++) {
 }
 snakeHeadBody[0].classList.add('head-snake');
 
+
+let mouse;
+
 function createMouse() {  
+  function mousePosition() {
     let posX = Math.round(Math.random() * (20-1) + 1);
     let posY = Math.round(Math.random() * (20-1) + 1);
     return [posX, posY];  
+  }
+
+  let coordinatesMouse = mousePosition(); 
+  mouse = document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`);
+ 
+  if (coordinatesMouse.length === coordinatesSnake.length && coordinatesMouse.every((value, index) => value === coordinatesSnake[index])) {
+  let coordinatesMouse = mousePosition();
+  mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];    
+  }
+
+  mouse.classList.add('mouse'); 
 }
 
-let coordinatesMouse = createMouse(); 
-let mouse = document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`);
-mouse.classList.add('mouse'); 
-
-if (coordinatesMouse.length === coordinatesSnake.length && coordinatesMouse.every((value, index) => value === coordinatesSnake[index])) {
-let coordinatesMouse = createMouse();
-mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];    
-}
+createMouse();
 
 let movement = 'right';
+let step = false;
+let score = 0;
+headerScorePoints.innerHTML = `${score}`;
 
 function moveSnake() {
   
   let snakeMove = [snakeHeadBody[0].getAttribute('posX'), snakeHeadBody[0].getAttribute('posY')];  
   snakeHeadBody[0].classList.remove('head-snake');
   snakeHeadBody[snakeHeadBody.length - 1].classList.remove('body-snake');
-  snakeHeadBody.pop(); 
- 
+  snakeHeadBody.pop();  
   
-  if(movement == 'left') {
-    if(snakeMove[0] > 1) {
-      snakeHeadBody.unshift(document.querySelector(`[posX='${+(snakeMove[0])-1}'][posY='${snakeMove[1]}']`));           
+  if(movement == 'left') {      
+    if(snakeMove[0] > 1) {       
+      snakeHeadBody.unshift(document.querySelector(`[posX='${+(snakeMove[0])-1}'][posY='${snakeMove[1]}']`));                
     } else {
       snakeHeadBody.unshift(document.querySelector(`[posX='20'][posY='${snakeMove[1]}']`));     
-    }
+    }      
   } else if(movement == 'right') {
     if(snakeMove[0] < 20) {
       snakeHeadBody.unshift(document.querySelector(`[posX='${+(snakeMove[0])+1}'][posY='${snakeMove[1]}']`));     
@@ -114,7 +124,7 @@ function moveSnake() {
     }
   } else if(movement == 'up') {
     if(snakeMove[1] < 20) {
-      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='${+(snakeMove[1])+1}']`));           
+      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='${+(snakeMove[1])+1}']`));                       
     } else {
       snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='1']`));      
     }
@@ -126,24 +136,51 @@ function moveSnake() {
     }
   }
 
-  snakeHeadBody[0].classList.add('head-snake');  
+  if(snakeHeadBody[0].getAttribute('posX') == mouse.getAttribute('posX') && 
+    snakeHeadBody[0].getAttribute('posY') == mouse.getAttribute('posY')) {
+      mouse.classList.remove('mouse');
+      let a = snakeHeadBody[snakeHeadBody.length - 1].getAttribute('posX');
+      let b = snakeHeadBody[snakeHeadBody.length - 1].getAttribute('posY');
+      snakeHeadBody.push(document.querySelector(`[posX='${a}'][posY='${b}']`));
+      createMouse();
+      score++;
+      headerScorePoints.innerHTML = `${score}`;
+    }
 
-  for(let i = 0; i < snakeHeadBody.length; i++) {
+  if(snakeHeadBody[0].classList.contains('body-snake')) {
+    setTimeout(() => {
+      alert('Game over');
+    }, 200)    
+    clearInterval(snakeInterval);
+  }
+  
+  snakeHeadBody[0].classList.add('head-snake'); 
+
+  for(let i = 0; i < snakeHeadBody.length; i++) {    
     snakeHeadBody[i].classList.add('body-snake');
   }
+
+  step = true;
 }
 
 let snakeInterval = setInterval(moveSnake, 300);
 
+
 window.addEventListener('keydown', function(evt) {
-  let key = evt.keyCode;
-  if(key == 37 && movement != 'right') {
-    movement = 'left';       
-  } else if(key == 38 && movement != 'down') {
-    movement = 'up';        
-  } else if(key == 39 && movement != 'left') {
-    movement = 'right';        
-  } else if(key == 40 && movement != 'up') {
-    movement = 'down';    
-  }
+  let key = evt.keyCode;  
+  if(step == true) {      
+    if(key == 37 && movement != 'right') {
+      movement = 'left';
+      step = false;         
+    } else if(key == 38 && movement != 'down') {
+      movement = 'up'; 
+      step = false;       
+    } else if(key == 39 && movement != 'left') {
+      movement = 'right';
+      step = false;        
+    } else if(key == 40 && movement != 'up') {
+      movement = 'down';
+      step = false;    
+    }
+  }  
 })
