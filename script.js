@@ -1,3 +1,4 @@
+
 let container = document.createElement('div');
 document.body.appendChild(container);
 container.classList.add('container');
@@ -66,8 +67,8 @@ function createSnake() {
 
 let coordinatesSnake = createSnake();
 let snakeHeadBody = [document.querySelector(`[posX='${coordinatesSnake[0]}'][posY='${coordinatesSnake[1]}']`),
-document.querySelector(`[posX='${coordinatesSnake[0]+1}'][posY='${coordinatesSnake[1]}']`),
-document.querySelector(`[posX='${coordinatesSnake[0]+2}'][posY='${coordinatesSnake[1]}']`)];
+document.querySelector(`[posX='${+(coordinatesSnake[0])-1}'][posY='${coordinatesSnake[1]}']`),
+document.querySelector(`[posX='${+(coordinatesSnake[0])-2}'][posY='${coordinatesSnake[1]}']`)];
 
 for(let i = 0; i < snakeHeadBody.length; i++) {
   snakeHeadBody[i].classList.add('body-snake');
@@ -81,30 +82,68 @@ function createMouse() {
 }
 
 let coordinatesMouse = createMouse(); 
-let mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];
-mouse[0].classList.add('mouse'); 
+let mouse = document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`);
+mouse.classList.add('mouse'); 
 
-if (coordinatesMouse == coordinatesSnake) {
+if (coordinatesMouse.length === coordinatesSnake.length && coordinatesMouse.every((value, index) => value === coordinatesSnake[index])) {
 let coordinatesMouse = createMouse();
 mouse = [document.querySelector(`[posX='${coordinatesMouse[0]}'][posY='${coordinatesMouse[1]}']`)];    
 }
 
+let movement = 'right';
+
 function moveSnake() {
-  let snakeMove = [snakeHeadBody[0].getAttribute('posX'), snakeHeadBody[0].getAttribute('posY')];
+  
+  let snakeMove = [snakeHeadBody[0].getAttribute('posX'), snakeHeadBody[0].getAttribute('posY')];  
   snakeHeadBody[0].classList.remove('head-snake');
   snakeHeadBody[snakeHeadBody.length - 1].classList.remove('body-snake');
-  snakeHeadBody.pop();
-  if(snakeMove[0] < 21 && snakeMove[0] > 1) {
-    snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]-1}'][posY='${snakeMove[1]}']`));
-    snakeHeadBody[0].classList.add('head-snake');
-  } else {
-    snakeHeadBody.unshift(document.querySelector(`[posX='20'][posY='${snakeMove[1]}']`));
-    snakeHeadBody[0].classList.add('head-snake');
-  }
+  snakeHeadBody.pop(); 
+ 
   
+  if(movement == 'left') {
+    if(snakeMove[0] > 1) {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${+(snakeMove[0])-1}'][posY='${snakeMove[1]}']`));           
+    } else {
+      snakeHeadBody.unshift(document.querySelector(`[posX='20'][posY='${snakeMove[1]}']`));     
+    }
+  } else if(movement == 'right') {
+    if(snakeMove[0] < 20) {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${+(snakeMove[0])+1}'][posY='${snakeMove[1]}']`));     
+    } else {
+      snakeHeadBody.unshift(document.querySelector(`[posX='1'][posY='${snakeMove[1]}']`));
+    }
+  } else if(movement == 'up') {
+    if(snakeMove[1] < 20) {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='${+(snakeMove[1])+1}']`));           
+    } else {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='1']`));      
+    }
+  } else if(movement == 'down') {
+    if(snakeMove[1] > 1) {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='${+(snakeMove[1])-1}']`));      
+    } else {
+      snakeHeadBody.unshift(document.querySelector(`[posX='${snakeMove[0]}'][posY='20']`));      
+    }
+  }
+
+  snakeHeadBody[0].classList.add('head-snake');  
+
   for(let i = 0; i < snakeHeadBody.length; i++) {
     snakeHeadBody[i].classList.add('body-snake');
   }
 }
 
-let snakeInterval = setInterval(moveSnake, 400);
+let snakeInterval = setInterval(moveSnake, 300);
+
+window.addEventListener('keydown', function(evt) {
+  let key = evt.keyCode;
+  if(key == 37 && movement != 'right') {
+    movement = 'left';       
+  } else if(key == 38 && movement != 'down') {
+    movement = 'up';        
+  } else if(key == 39 && movement != 'left') {
+    movement = 'right';        
+  } else if(key == 40 && movement != 'up') {
+    movement = 'down';    
+  }
+})
